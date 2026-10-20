@@ -1,1 +1,1052 @@
+<!DOCTYPE html>
+<html lang="id" class="h-full bg-slate-50">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>EduMind AI — Platform Pembelajaran Adaptif & Integritas Akademik</title>
+    <!-- Tailwind CSS CDN -->
+    <script src="https://cdn.tailwindcss.com"></script>
+    <!-- Inter Font -->
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700&display=swap" rel="stylesheet">
+    <!-- Lucide Icons -->
+    <script src="https://unpkg.com/lucide@latest"></script>
+    <!-- Chart.js -->
+    <script src="https://cdn.jsdelivr.com/npm/chart.js"></script>
 
+    <script>
+        tailwind.config = {
+            theme: {
+                extend: {
+                    fontFamily: {
+                        sans: ['Inter', 'sans-serif'],
+                    },
+                    colors: {
+                        brand: {
+                            50: '#f0f7ff',
+                            100: '#e0effe',
+                            200: '#bae0fd',
+                            600: '#0284c7',
+                            700: '#0369a1',
+                            900: '#0c4a6e',
+                        },
+                        slate: {
+                            850: '#1e293b',
+                            900: '#0f172a',
+                        }
+                    }
+                }
+            }
+        }
+    </script>
+    <style>
+        /* Custom scrollbars for clean UI feel */
+        ::-webkit-scrollbar {
+            width: 6px;
+            height: 6px;
+        }
+        ::-webkit-scrollbar-track {
+            background: #f1f5f9;
+        }
+        ::-webkit-scrollbar-thumb {
+            background: #cbd5e1;
+            border-radius: 4px;
+        }
+        ::-webkit-scrollbar-thumb:hover {
+            background: #94a3b8;
+        }
+        .flashcard-inner {
+            transition: transform 0.6s;
+            transform-style: preserve-3d;
+        }
+        .flashcard-flipped {
+            transform: rotateY(180deg);
+        }
+        .flashcard-front, .flashcard-back {
+            backface-visibility: hidden;
+        }
+        .flashcard-back {
+            transform: rotateY(180deg);
+        }
+    </style>
+</head>
+<body class="h-full text-slate-800 font-sans antialiased bg-slate-50 flex flex-col selection:bg-brand-100 selection:text-brand-900">
+
+    <!-- TOP HEADER -->
+    <header class="sticky top-0 z-40 bg-white border-b border-slate-200/80 px-4 lg:px-8 py-3 flex items-center justify-between">
+        <div class="flex items-center space-x-3">
+            <div class="w-8 h-8 rounded-lg bg-slate-900 flex items-center justify-center text-white font-bold text-sm tracking-wider">
+                EM
+            </div>
+            <div>
+                <div class="flex items-center space-x-2">
+                    <span class="font-bold text-slate-900 tracking-tight text-base">EduMind<span class="text-brand-600">AI</span></span>
+                    <span class="text-[10px] uppercase tracking-wider font-semibold bg-slate-100 text-slate-600 px-2 py-0.5 rounded-full border border-slate-200">Prototype V3.2</span>
+                </div>
+                <p class="text-xs text-slate-500 hidden sm:block">Platform Pembelajaran Adaptif & Penjaga Integritas Akademik</p>
+            </div>
+        </div>
+
+        <!-- System Controls & User Profile -->
+        <div class="flex items-center space-x-4">
+            <div class="hidden md:flex items-center space-x-2 text-xs bg-emerald-50 text-emerald-700 px-3 py-1.5 rounded-full border border-emerald-200 font-medium">
+                <span class="w-2 h-2 rounded-full bg-emerald-500 animate-pulse"></span>
+                <span>Mesin Adaptif Aktif</span>
+            </div>
+
+            <div class="h-4 w-[1px] bg-slate-200 hidden md:block"></div>
+
+            <div class="flex items-center space-x-3">
+                <div class="text-right hidden sm:block">
+                    <div class="text-xs font-semibold text-slate-900">Andi Pratama</div>
+                    <div class="text-[11px] text-slate-500">Mahasiswa Teknik Informatika</div>
+                </div>
+                <div class="w-9 h-9 rounded-full bg-slate-200 border border-slate-300 flex items-center justify-center text-slate-700 font-semibold text-xs">
+                    AP
+                </div>
+            </div>
+        </div>
+    </header>
+
+    <!-- MAIN WRAPPER -->
+    <div class="flex-1 flex overflow-hidden max-w-7xl w-full mx-auto px-2 sm:px-4 lg:px-6 py-4 gap-6">
+
+        <!-- SIDEBAR NAVIGATION -->
+        <aside class="w-64 flex-shrink-0 bg-white rounded-xl border border-slate-200 p-3 hidden md:flex flex-col justify-between shadow-sm">
+            <div class="space-y-1">
+                <div class="px-3 py-2 text-[11px] font-semibold text-slate-400 uppercase tracking-wider">
+                    Modul Pembelajaran
+                </div>
+                
+                <button onclick="switchTab('diagnostic')" id="nav-diagnostic" class="nav-item w-full flex items-center space-x-3 px-3 py-2.5 rounded-lg text-sm font-medium transition-all text-slate-600 hover:bg-slate-50 hover:text-slate-900">
+                    <i data-lucide="compass" class="w-4 h-4"></i>
+                    <span>Diagnostik VARK</span>
+                </button>
+
+                <button onclick="switchTab('notebook')" id="nav-notebook" class="nav-item w-full flex items-center space-x-3 px-3 py-2.5 rounded-lg text-sm font-medium transition-all text-slate-600 hover:bg-slate-50 hover:text-slate-900">
+                    <i data-lucide="book-open-check" class="w-4 h-4"></i>
+                    <span>Multi-Modal Hub</span>
+                </button>
+
+                <button onclick="switchTab('timer')" id="nav-timer" class="nav-item w-full flex items-center space-x-3 px-3 py-2.5 rounded-lg text-sm font-medium transition-all text-slate-600 hover:bg-slate-50 hover:text-slate-900">
+                    <i data-lucide="timer" class="w-4 h-4"></i>
+                    <span>Mesin Interval 30-15-15</span>
+                </button>
+
+                <button onclick="switchTab('integrity')" id="nav-integrity" class="nav-item w-full flex items-center space-x-3 px-3 py-2.5 rounded-lg text-sm font-medium transition-all text-slate-600 hover:bg-slate-50 hover:text-slate-900">
+                    <i data-lucide="shield-check" class="w-4 h-4"></i>
+                    <span>Integritas Akademik</span>
+                </button>
+            </div>
+
+            <!-- Context Info Card -->
+            <div class="bg-slate-50 rounded-lg p-3 border border-slate-200 text-xs space-y-2">
+                <div class="font-semibold text-slate-800 flex items-center justify-between">
+                    <span>Gempita Nusantara #3</span>
+                    <i data-lucide="award" class="w-3.5 h-3.5 text-brand-600"></i>
+                </div>
+                <p class="text-slate-500 leading-relaxed text-[11px]">
+                    Solusi penurunan kecemasan akademik & pencegahan joki tugas berbasis AI Adaptif.
+                </p>
+            </div>
+        </aside>
+
+        <!-- MAIN CONTENT AREA -->
+        <main class="flex-1 overflow-y-auto pr-1">
+
+            <!-- MOBILE NAV SELECTOR -->
+            <div class="md:hidden mb-4">
+                <select id="mobile-nav" onchange="switchTab(this.value)" class="w-full bg-white border border-slate-300 text-slate-800 text-sm rounded-lg p-2.5 font-medium shadow-sm">
+                    <option value="diagnostic">1. Tes Diagnostik Gaya Belajar (VARK)</option>
+                    <option value="notebook">2. Multi-Modal Hub (NotebookLM Concept)</option>
+                    <option value="timer">3. Mesin Pembelajaran Interval 30-15-15</option>
+                    <option value="integrity">4. Analitik Integritas & Pencegahan Kecurangan</option>
+                </select>
+            </div>
+
+            <!-- SECTION 1: DIAGNOSTIC TOOL (VARK) -->
+            <section id="tab-diagnostic" class="tab-content space-y-6">
+                <!-- Banner -->
+                <div class="bg-white rounded-xl border border-slate-200 p-6 shadow-sm">
+                    <div class="max-w-3xl space-y-2">
+                        <span class="inline-flex items-center px-2.5 py-0.5 rounded-full text-xs font-semibold bg-brand-50 text-brand-700 border border-brand-200">
+                            Pemeriksaan Awal Gaya Belajar
+                        </span>
+                        <h1 class="text-2xl font-bold text-slate-900 tracking-tight">Asesmen Adaptif VARK</h1>
+                        <p class="text-slate-600 text-sm leading-relaxed">
+                            Aplikasi mengidentifikasi kecenderungan kognitif Anda untuk menyesuaikan materi visual, audio, atau kuis interaktif secara otomatis guna meminimalkan beban mental berlebih (*cognitive overload*).
+                        </p>
+                    </div>
+                </div>
+
+                <!-- Interactive Test Container -->
+                <div class="grid grid-cols-1 lg:grid-cols-3 gap-6">
+                    <!-- Questions Form -->
+                    <div class="lg:col-col-span-2 bg-white rounded-xl border border-slate-200 p-6 shadow-sm space-y-6 lg:col-span-2">
+                        <div class="flex items-center justify-between border-b border-slate-100 pb-4">
+                            <h2 class="text-base font-bold text-slate-900">Pertanyaan Diagnostik (4 Soal Singkat)</h2>
+                            <span id="diagnostic-progress" class="text-xs font-semibold text-brand-600">Terisi 0 dari 4</span>
+                        </div>
+
+                        <form id="vark-form" class="space-y-6">
+                            <!-- Q1 -->
+                            <div class="space-y-3">
+                                <label class="text-sm font-semibold text-slate-800 block">
+                                    1. Saat mempelajari konsep algoritma yang rumit, metode mana yang paling cepat membuat Anda paham?
+                                </label>
+                                <div class="grid grid-cols-1 sm:grid-cols-3 gap-3">
+                                    <label class="border border-slate-200 hover:border-slate-300 rounded-lg p-3 flex flex-col cursor-pointer bg-slate-50/50 hover:bg-slate-50 transition-all text-xs">
+                                        <input type="radio" name="q1" value="V" class="mb-2 text-brand-600 focus:ring-brand-600" onchange="updateDiagnostic()">
+                                        <span class="font-semibold text-slate-900">Diagram / Diagram Alir</span>
+                                        <span class="text-slate-500 mt-1">Melihat bagan visual dan grafik pemetaan.</span>
+                                    </label>
+                                    <label class="border border-slate-200 hover:border-slate-300 rounded-lg p-3 flex flex-col cursor-pointer bg-slate-50/50 hover:bg-slate-50 transition-all text-xs">
+                                        <input type="radio" name="q1" value="A" class="mb-2 text-brand-600 focus:ring-brand-600" onchange="updateDiagnostic()">
+                                        <span class="font-semibold text-slate-900">Penjelasan Podcast</span>
+                                        <span class="text-slate-500 mt-1">Mendengarkan rekaman diskusi & ceramah audio.</span>
+                                    </label>
+                                    <label class="border border-slate-200 hover:border-slate-300 rounded-lg p-3 flex flex-col cursor-pointer bg-slate-50/50 hover:bg-slate-50 transition-all text-xs">
+                                        <input type="radio" name="q1" value="K" class="mb-2 text-brand-600 focus:ring-brand-600" onchange="updateDiagnostic()">
+                                        <span class="font-semibold text-slate-900">Simulasi Langsung</span>
+                                        <span class="text-slate-500 mt-1">Mencoba latihan koding dan studi kasus nyata.</span>
+                                    </label>
+                                </div>
+                            </div>
+
+                            <!-- Q2 -->
+                            <div class="space-y-3">
+                                <label class="text-sm font-semibold text-slate-800 block">
+                                    2. Ketika Anda diminta mengingat poin-poin penting esai, Anda lebih suka:
+                                </label>
+                                <div class="grid grid-cols-1 sm:grid-cols-3 gap-3">
+                                    <label class="border border-slate-200 hover:border-slate-300 rounded-lg p-3 flex flex-col cursor-pointer bg-slate-50/50 hover:bg-slate-50 transition-all text-xs">
+                                        <input type="radio" name="q2" value="V" class="mb-2 text-brand-600 focus:ring-brand-600" onchange="updateDiagnostic()">
+                                        <span class="font-semibold text-slate-900">Mind Map Berwarna</span>
+                                        <span class="text-slate-500 mt-1">Struktur visual berwarna dan peta konsep.</span>
+                                    </label>
+                                    <label class="border border-slate-200 hover:border-slate-300 rounded-lg p-3 flex flex-col cursor-pointer bg-slate-50/50 hover:bg-slate-50 transition-all text-xs">
+                                        <input type="radio" name="q2" value="A" class="mb-2 text-brand-600 focus:ring-brand-600" onchange="updateDiagnostic()">
+                                        <span class="font-semibold text-slate-900">Narasi Suara</span>
+                                        <span class="text-slate-500 mt-1">Mengulang kembali rangkuman ucapan kata demi kata.</span>
+                                    </label>
+                                    <label class="border border-slate-200 hover:border-slate-300 rounded-lg p-3 flex flex-col cursor-pointer bg-slate-50/50 hover:bg-slate-50 transition-all text-xs">
+                                        <input type="radio" name="q2" value="K" class="mb-2 text-brand-600 focus:ring-brand-600" onchange="updateDiagnostic()">
+                                        <span class="font-semibold text-slate-900">Flashcard Interaktif</span>
+                                        <span class="text-slate-500 mt-1">Membalik-balik kartu pertanyaan dan jawaban.</span>
+                                    </label>
+                                </div>
+                            </div>
+
+                            <!-- Q3 -->
+                            <div class="space-y-3">
+                                <label class="text-sm font-semibold text-slate-800 block">
+                                    3. Tantangan terbesar Anda saat belajar menjelang ujian adalah:
+                                </label>
+                                <div class="grid grid-cols-1 sm:grid-cols-3 gap-3">
+                                    <label class="border border-slate-200 hover:border-slate-300 rounded-lg p-3 flex flex-col cursor-pointer bg-slate-50/50 hover:bg-slate-50 transition-all text-xs">
+                                        <input type="radio" name="q3" value="V" class="mb-2 text-brand-600 focus:ring-brand-600" onchange="updateDiagnostic()">
+                                        <span class="font-semibold text-slate-900">Teks Terlalu Padat</span>
+                                        <span class="text-slate-500 mt-1">Bosan melihat buku teks tanpa visual representatif.</span>
+                                    </label>
+                                    <label class="border border-slate-200 hover:border-slate-300 rounded-lg p-3 flex flex-col cursor-pointer bg-slate-50/50 hover:bg-slate-50 transition-all text-xs">
+                                        <input type="radio" name="q3" value="A" class="mb-2 text-brand-600 focus:ring-brand-600" onchange="updateDiagnostic()">
+                                        <span class="font-semibold text-slate-900">Cepat Cepat Lelah Membaca</span>
+                                        <span class="text-slate-500 mt-1">Mata lelah, lebih mudah mencerna lewat pendengaran.</span>
+                                    </label>
+                                    <label class="border border-slate-200 hover:border-slate-300 rounded-lg p-3 flex flex-col cursor-pointer bg-slate-50/50 hover:bg-slate-50 transition-all text-xs">
+                                        <input type="radio" name="q3" value="K" class="mb-2 text-brand-600 focus:ring-brand-600" onchange="updateDiagnostic()">
+                                        <span class="font-semibold text-slate-900">Teori Tanpa Praktek</span>
+                                        <span class="text-slate-500 mt-1">Sulit paham jika tidak ada contoh penerapan praktis.</span>
+                                    </label>
+                                </div>
+                            </div>
+
+                            <!-- Q4 -->
+                            <div class="space-y-3">
+                                <label class="text-sm font-semibold text-slate-800 block">
+                                    4. Apa respon ideal yang Anda harapkan dari pendamping AI EduMind?
+                                </label>
+                                <div class="grid grid-cols-1 sm:grid-cols-3 gap-3">
+                                    <label class="border border-slate-200 hover:border-slate-300 rounded-lg p-3 flex flex-col cursor-pointer bg-slate-50/50 hover:bg-slate-50 transition-all text-xs">
+                                        <input type="radio" name="q4" value="V" class="mb-2 text-brand-600 focus:ring-brand-600" onchange="updateDiagnostic()">
+                                        <span class="font-semibold text-slate-900">Sajikan Infografis</span>
+                                        <span class="text-slate-500 mt-1">Rangkum materi menjadi grafik spasial yang ringkas.</span>
+                                    </label>
+                                    <label class="border border-slate-200 hover:border-slate-300 rounded-lg p-3 flex flex-col cursor-pointer bg-slate-50/50 hover:bg-slate-50 transition-all text-xs">
+                                        <input type="radio" name="q4" value="A" class="mb-2 text-brand-600 focus:ring-brand-600" onchange="updateDiagnostic()">
+                                        <span class="font-semibold text-slate-900">Ringkasan Diskusi Audio</span>
+                                        <span class="text-slate-500 mt-1">Putar dialog interaktif dengan intonasi yang jelas.</span>
+                                    </label>
+                                    <label class="border border-slate-200 hover:border-slate-300 rounded-lg p-3 flex flex-col cursor-pointer bg-slate-50/50 hover:bg-slate-50 transition-all text-xs">
+                                        <input type="radio" name="q4" value="K" class="mb-2 text-brand-600 focus:ring-brand-600" onchange="updateDiagnostic()">
+                                        <span class="font-semibold text-slate-900">Berikan Studi Kasus</span>
+                                        <span class="text-slate-500 mt-1">Kirim simulasi soal ujian bertingkat.</span>
+                                    </label>
+                                </div>
+                            </div>
+                        </form>
+                    </div>
+
+                    <!-- Profile Output Card -->
+                    <div class="bg-slate-900 text-white rounded-xl p-6 flex flex-col justify-between shadow-sm border border-slate-800">
+                        <div class="space-y-5">
+                            <div class="flex items-center justify-between border-b border-slate-800 pb-3">
+                                <span class="text-xs uppercase font-semibold text-slate-400 tracking-wider">Hasil Diagnosis AI</span>
+                                <i data-lucide="sparkles" class="w-4 h-4 text-brand-400"></i>
+                            </div>
+
+                            <div class="space-y-1">
+                                <div id="vark-result-title" class="text-xl font-bold text-white">Visual Dominant (75%)</div>
+                                <p id="vark-result-desc" class="text-xs text-slate-400 leading-relaxed">
+                                    Anda sangat responsif terhadap pemetaan visual, hierarki diagram, dan bagan alir. Sistem akan memprioritaskan Mind Map interaktif pada Multi-Modal Hub.
+                                </p>
+                            </div>
+
+                            <!-- Breakdown Stats -->
+                            <div class="space-y-3 pt-2">
+                                <div class="space-y-1">
+                                    <div class="flex justify-between text-xs font-medium">
+                                        <span class="text-slate-300">Visual (Spasial)</span>
+                                        <span id="vark-v-val" class="text-brand-400">50%</span>
+                                    </div>
+                                    <div class="w-full h-1.5 bg-slate-800 rounded-full overflow-hidden">
+                                        <div id="vark-v-bar" class="h-full bg-brand-500 transition-all duration-500" style="width: 50%;"></div>
+                                    </div>
+                                </div>
+
+                                <div class="space-y-1">
+                                    <div class="flex justify-between text-xs font-medium">
+                                        <span class="text-slate-300">Auditori (Aural)</span>
+                                        <span id="vark-a-val" class="text-emerald-400">25%</span>
+                                    </div>
+                                    <div class="w-full h-1.5 bg-slate-800 rounded-full overflow-hidden">
+                                        <div id="vark-a-bar" class="h-full bg-emerald-500 transition-all duration-500" style="width: 25%;"></div>
+                                    </div>
+                                </div>
+
+                                <div class="space-y-1">
+                                    <div class="flex justify-between text-xs font-medium">
+                                        <span class="text-slate-300">Kinestetik (Praktek)</span>
+                                        <span id="vark-k-val" class="text-amber-400">25%</span>
+                                    </div>
+                                    <div class="w-full h-1.5 bg-slate-800 rounded-full overflow-hidden">
+                                        <div id="vark-k-bar" class="h-full bg-amber-500 transition-all duration-500" style="width: 25%;"></div>
+                                    </div>
+                                </div>
+                            </div>
+                        </div>
+
+                        <div class="pt-6 border-t border-slate-800">
+                            <button onclick="applyDiagnosticAndRedirect()" class="w-full py-2.5 bg-brand-600 hover:bg-brand-700 text-white font-medium text-xs rounded-lg transition-all flex items-center justify-center space-x-2 shadow-sm">
+                                <span>Terapkan Profil Pembelajaran Ini</span>
+                                <i data-lucide="arrow-right" class="w-3.5 h-3.5"></i>
+                            </button>
+                        </div>
+                    </div>
+                </div>
+            </section>
+
+            <!-- SECTION 2: MULTI-MODAL CONTENT HUB (NOTEBOOKLM CONCEPT) -->
+            <section id="tab-notebook" class="tab-content hidden space-y-6">
+                <!-- Header -->
+                <div class="bg-white rounded-xl border border-slate-200 p-6 shadow-sm flex flex-col sm:flex-row justify-between items-start sm:items-center gap-4">
+                    <div>
+                        <div class="flex items-center space-x-2">
+                            <span class="inline-flex items-center px-2.5 py-0.5 rounded-full text-xs font-semibold bg-emerald-50 text-emerald-700 border border-emerald-200">
+                                Multi-Modal Generator
+                            </span>
+                            <span class="text-xs text-slate-500">Subjek: Kecerdasan Buatan & Etika</span>
+                        </div>
+                        <h1 class="text-2xl font-bold text-slate-900 tracking-tight mt-1">Multi-Modal Learning Hub</h1>
+                    </div>
+                    
+                    <div class="flex items-center space-x-2 bg-slate-100 p-1 rounded-lg border border-slate-200 text-xs font-medium">
+                        <button onclick="setModalTab('visual')" id="modal-tab-visual" class="px-3 py-1.5 rounded-md bg-white text-slate-900 shadow-sm transition-all">Visual Diagram</button>
+                        <button onclick="setModalTab('auditory')" id="modal-tab-auditory" class="px-3 py-1.5 rounded-md text-slate-600 hover:text-slate-900 transition-all">Audio Podcast</button>
+                        <button onclick="setModalTab('kinesthetic')" id="modal-tab-kinesthetic" class="px-3 py-1.5 rounded-md text-slate-600 hover:text-slate-900 transition-all">Flashcard Kinestetik</button>
+                    </div>
+                </div>
+
+                <!-- SUB-TAB 1: VISUAL (MIND MAP & NODES) -->
+                <div id="sub-visual" class="bg-white rounded-xl border border-slate-200 p-6 shadow-sm space-y-4">
+                    <div class="flex items-center justify-between border-b border-slate-100 pb-3">
+                        <div>
+                            <h3 class="font-bold text-slate-900 text-sm">Peta Konsep & Struktur Logis AI Ethics</h3>
+                            <p class="text-xs text-slate-500">Grafik keterhubungan otomatis hasil sintesis materi esai.</p>
+                        </div>
+                        <span class="text-xs font-mono text-slate-400">Interactive SVG Node</span>
+                    </div>
+
+                    <div class="w-full bg-slate-900 rounded-lg p-4 min-h-[360px] flex items-center justify-center relative overflow-hidden">
+                        <!-- SVG Mind Map Simulation -->
+                        <svg class="w-full h-80" viewBox="0 0 600 300" xmlns="http://www.w3.org/2000/svg">
+                            <!-- Connection Lines -->
+                            <line x1="300" y1="150" x2="150" y2="80" stroke="#0284c7" stroke-width="2" stroke-dasharray="4" />
+                            <line x1="300" y1="150" x2="450" y2="80" stroke="#0284c7" stroke-width="2" stroke-dasharray="4" />
+                            <line x1="300" y1="150" x2="180" y2="230" stroke="#0284c7" stroke-width="2" stroke-dasharray="4" />
+                            <line x1="300" y1="150" x2="420" y2="230" stroke="#0284c7" stroke-width="2" stroke-dasharray="4" />
+
+                            <!-- Central Node -->
+                            <g class="cursor-pointer">
+                                <circle cx="300" cy="150" r="38" fill="#0369a1" stroke="#38bdf8" stroke-width="3" />
+                                <text x="300" y="146" text-anchor="middle" fill="#ffffff" font-size="11" font-weight="bold">AI Adaptif</text>
+                                <text x="300" y="159" text-anchor="middle" fill="#bae0fd" font-size="9">& Integritas</text>
+                            </g>
+
+                            <!-- Node 1: VARK Engine -->
+                            <g class="cursor-pointer hover:opacity-90 transition-opacity">
+                                <circle cx="150" cy="80" r="28" fill="#0f172a" stroke="#0284c7" stroke-width="2" />
+                                <text x="150" y="78" text-anchor="middle" fill="#ffffff" font-size="10" font-weight="semibold">Engine VARK</text>
+                                <text x="150" y="90" text-anchor="middle" fill="#94a3b8" font-size="8">Personalisasi</text>
+                            </g>
+
+                            <!-- Node 2: Interval Engine -->
+                            <g class="cursor-pointer hover:opacity-90 transition-opacity">
+                                <circle cx="450" cy="80" r="28" fill="#0f172a" stroke="#10b981" stroke-width="2" />
+                                <text x="450" y="78" text-anchor="middle" fill="#ffffff" font-size="10" font-weight="semibold">Ritme 30-15-15</text>
+                                <text x="450" y="90" text-anchor="middle" fill="#94a3b8" font-size="8">Fokus & Istirahat</text>
+                            </g>
+
+                            <!-- Node 3: Anti-Joki -->
+                            <g class="cursor-pointer hover:opacity-90 transition-opacity">
+                                <circle cx="180" cy="230" r="28" fill="#0f172a" stroke="#f59e0b" stroke-width="2" />
+                                <text x="180" y="228" text-anchor="middle" fill="#ffffff" font-size="10" font-weight="semibold">Anti-Joki</text>
+                                <text x="180" y="240" text-anchor="middle" fill="#94a3b8" font-size="8">Integritas Diri</text>
+                            </g>
+
+                            <!-- Node 4: Beban Kognitif -->
+                            <g class="cursor-pointer hover:opacity-90 transition-opacity">
+                                <circle cx="420" cy="230" r="28" fill="#0f172a" stroke="#ec4899" stroke-width="2" />
+                                <text x="420" y="228" text-anchor="middle" fill="#ffffff" font-size="10" font-weight="semibold">Reduksi Cemas</text>
+                                <text x="420" y="240" text-anchor="middle" fill="#94a3b8" font-size="8">Kesejahteraan Mental</text>
+                            </g>
+                        </svg>
+
+                        <!-- Legend overlay -->
+                        <div class="absolute bottom-3 right-3 bg-slate-800/80 backdrop-blur border border-slate-700 rounded-md p-2 text-[10px] text-slate-300 space-y-1">
+                            <div class="flex items-center space-x-1.5">
+                                <span class="w-2 h-2 rounded-full bg-brand-500"></span>
+                                <span>Fokus Utama</span>
+                            </div>
+                            <div class="flex items-center space-x-1.5">
+                                <span class="w-2 h-2 rounded-full bg-emerald-500"></span>
+                                <span>Manajemen Waktu</span>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+
+                <!-- SUB-TAB 2: AUDITORY (PODCAST PLAYER) -->
+                <div id="sub-auditory" class="bg-white rounded-xl border border-slate-200 p-6 shadow-sm space-y-6 hidden">
+                    <div class="flex items-center justify-between border-b border-slate-100 pb-3">
+                        <div>
+                            <h3 class="font-bold text-slate-900 text-sm">Audio Overview (NotebookLM Concept)</h3>
+                            <p class="text-xs text-slate-500">Sintesis AI mengubah dokumen esai menjadi percakapan audio dua pembawa acara.</p>
+                        </div>
+                        <span class="text-xs bg-emerald-50 text-emerald-700 px-2.5 py-1 rounded-full border border-emerald-200 font-medium">Suara AI HD</span>
+                    </div>
+
+                    <!-- Player Interface -->
+                    <div class="bg-slate-900 rounded-xl p-5 text-white space-y-4">
+                        <div class="flex items-center justify-between">
+                            <div class="flex items-center space-x-3">
+                                <div class="w-10 h-10 rounded-lg bg-brand-600 flex items-center justify-center">
+                                    <i data-lucide="headphones" class="w-5 h-5 text-white"></i>
+                                </div>
+                                <div>
+                                    <div class="font-semibold text-sm">Episode 1: Mengatasi Kultur Joki dengan AI Adaptif</div>
+                                    <div class="text-xs text-slate-400">EduMind Synthesis Host A & Host B</div>
+                                </div>
+                            </div>
+                            <span class="text-xs font-mono text-slate-400">01:45 / 03:30</span>
+                        </div>
+
+                        <!-- Track Bar -->
+                        <div class="space-y-1">
+                            <div class="w-full h-1.5 bg-slate-800 rounded-full overflow-hidden cursor-pointer">
+                                <div class="h-full bg-brand-500 w-1/2"></div>
+                            </div>
+                        </div>
+
+                        <!-- Controls -->
+                        <div class="flex items-center justify-between pt-2">
+                            <div class="flex items-center space-x-3">
+                                <button class="text-slate-400 hover:text-white transition-colors">
+                                    <i data-lucide="rotate-ccw" class="w-4 h-4"></i>
+                                </button>
+                                <button id="play-btn" onclick="toggleAudioSimulation()" class="w-9 h-9 rounded-full bg-white text-slate-900 flex items-center justify-center font-bold hover:bg-slate-200 transition-all">
+                                    <i data-lucide="play" class="w-4 h-4 fill-slate-900 ml-0.5" id="play-icon"></i>
+                                </button>
+                                <button class="text-slate-400 hover:text-white transition-colors">
+                                    <i data-lucide="rotate-cw" class="w-4 h-4"></i>
+                                </button>
+                            </div>
+
+                            <div class="flex items-center space-x-2">
+                                <span class="text-xs text-slate-400">Kecepatan:</span>
+                                <select class="bg-slate-800 border border-slate-700 text-xs rounded px-2 py-1 text-white focus:outline-none">
+                                    <option>1.0x</option>
+                                    <option>1.25x</option>
+                                    <option>1.5x</option>
+                                </select>
+                            </div>
+                        </div>
+                    </div>
+
+                    <!-- Interactive Transcript -->
+                    <div class="space-y-2">
+                        <span class="text-xs font-bold text-slate-700 uppercase tracking-wider">Transkrip Real-Time</span>
+                        <div class="bg-slate-50 border border-slate-200 rounded-lg p-4 space-y-3 text-xs leading-relaxed max-h-48 overflow-y-auto">
+                            <div class="p-2 rounded bg-white border border-slate-200 shadow-2xs">
+                                <span class="font-bold text-brand-700">Host A:</span> "Mengapa mahasiswa sering terjebak memakai joki tugas saat pekan ujian?"
+                            </div>
+                            <div class="p-2 rounded bg-brand-50/50 border border-brand-100">
+                                <span class="font-bold text-slate-900">Host B (AI):</span> "Penyebab utamanya adalah pemicu kecemasan akibat materi yang menumpuk dan ketiadaan ritme belajar yang terstruktur. Di sinilah metode interval 30-15-15 membantu."
+                            </div>
+                            <div class="p-2 rounded bg-white border border-slate-200 opacity-60">
+                                <span class="font-bold text-brand-700">Host A:</span> "Bagaimana AI memastikan integritas tetap terjaga tanpa terkesan memata-matai?"
+                            </div>
+                        </div>
+                    </div>
+                </div>
+
+                <!-- SUB-TAB 3: KINESTHETIC (FLASHCARDS) -->
+                <div id="sub-kinesthetic" class="bg-white rounded-xl border border-slate-200 p-6 shadow-sm space-y-6 hidden">
+                    <div class="flex items-center justify-between border-b border-slate-100 pb-3">
+                        <div>
+                            <h3 class="font-bold text-slate-900 text-sm">Active Recall Flashcards</h3>
+                            <p class="text-xs text-slate-500">Metode pemanggilan memori aktif untuk penguatan retensi jangka panjang.</p>
+                        </div>
+                        <span class="text-xs font-semibold text-brand-600">Kartu 1 dari 3</span>
+                    </div>
+
+                    <!-- Flip Flashcard simulation -->
+                    <div class="max-w-xl mx-auto h-64 perspective cursor-pointer" onclick="flipCard()">
+                        <div id="flashcard" class="flashcard-inner w-full h-full relative rounded-xl border border-slate-200 shadow-md bg-gradient-to-br from-slate-900 to-slate-800 text-white p-8 flex flex-col justify-between">
+                            
+                            <!-- Front -->
+                            <div class="flashcard-front absolute inset-0 p-8 flex flex-col justify-between">
+                                <div class="flex justify-between items-center text-xs text-slate-400">
+                                    <span>PERTANYAAN</span>
+                                    <i data-lucide="rotate-cw" class="w-4 h-4"></i>
+                                </div>
+                                <div class="text-center">
+                                    <p class="text-lg font-bold text-white leading-snug">
+                                        Bagaimana rasio interval 30-15-15 membagi waktu belajar mahasiswa?
+                                    </p>
+                                    <p class="text-xs text-brand-400 mt-3">(Klik kartu untuk melihat jawaban)</p>
+                                </div>
+                                <div class="text-[10px] text-slate-400 text-center uppercase tracking-wider">Topik: Manajemen Waktu</div>
+                            </div>
+
+                            <!-- Back -->
+                            <div class="flashcard-back absolute inset-0 p-8 bg-brand-900 text-white rounded-xl flex flex-col justify-between">
+                                <div class="flex justify-between items-center text-xs text-brand-200">
+                                    <span>JAWABAN EKSPLISIT</span>
+                                    <i data-lucide="check-circle" class="w-4 h-4 text-emerald-400"></i>
+                                </div>
+                                <div class="space-y-2 text-xs leading-relaxed text-slate-100">
+                                    <p><strong class="text-white">30 Menit:</strong> Pendalaman Konsep Fokus</p>
+                                    <p><strong class="text-white">15 Menit:</strong> Latihan Soal Adaptif Aktif</p>
+                                    <p><strong class="text-white">15 Menit:</strong> Evaluasi AI & Istirahat Terstruktur</p>
+                                </div>
+                                <div class="text-[10px] text-brand-300 text-center uppercase tracking-wider">EduMind Learning Framework</div>
+                            </div>
+
+                        </div>
+                    </div>
+
+                    <!-- Self Assessment buttons -->
+                    <div class="flex justify-center items-center space-x-3 pt-2">
+                        <button class="px-4 py-2 rounded-lg border border-red-200 bg-red-50 text-red-700 text-xs font-semibold hover:bg-red-100 transition-all">Sulit (Ulangi)</button>
+                        <button class="px-4 py-2 rounded-lg border border-amber-200 bg-amber-50 text-amber-700 text-xs font-semibold hover:bg-amber-100 transition-all">Ragu-ragu</button>
+                        <button class="px-4 py-2 rounded-lg border border-emerald-200 bg-emerald-50 text-emerald-700 text-xs font-semibold hover:bg-emerald-100 transition-all">Sangat Mudah</button>
+                    </div>
+                </div>
+            </section>
+
+            <!-- SECTION 3: ADAPTIVE 30-15-15 INTERVAL TIMER -->
+            <section id="tab-timer" class="tab-content hidden space-y-6">
+                <!-- Header -->
+                <div class="bg-white rounded-xl border border-slate-200 p-6 shadow-sm">
+                    <div class="max-w-3xl space-y-2">
+                        <span class="inline-flex items-center px-2.5 py-0.5 rounded-full text-xs font-semibold bg-brand-50 text-brand-700 border border-brand-200">
+                            Mesin Belajar Terstruktur
+                        </span>
+                        <h1 class="text-2xl font-bold text-slate-900 tracking-tight">Interval Belajar 30-15-15</h1>
+                        <p class="text-slate-600 text-sm leading-relaxed">
+                            Mencegah kelelahan otak (*burnout*) dan menekan keinginan menggunakan joki dengan membagi sesi menjadi 3 fase terukur.
+                        </p>
+                    </div>
+                </div>
+
+                <!-- Timer Workspace Grid -->
+                <div class="grid grid-cols-1 lg:grid-cols-3 gap-6">
+                    
+                    <!-- Main Timer Card -->
+                    <div class="lg:col-span-2 bg-white rounded-xl border border-slate-200 p-8 shadow-sm flex flex-col justify-between items-center text-center space-y-6">
+                        
+                        <!-- Phase Badge indicator -->
+                        <div class="inline-flex items-center space-x-2 bg-slate-100 px-4 py-1.5 rounded-full border border-slate-200">
+                            <span id="timer-phase-dot" class="w-2.5 h-2.5 rounded-full bg-brand-600 animate-pulse"></span>
+                            <span id="timer-phase-title" class="text-xs font-bold text-slate-800 uppercase tracking-wider">Fase 1: Pendalaman Konsep (30 Min)</span>
+                        </div>
+
+                        <!-- Big Clock Display -->
+                        <div class="space-y-2">
+                            <div id="timer-display" class="text-6xl sm:text-7xl font-bold font-mono text-slate-900 tracking-tight">
+                                30:00
+                            </div>
+                            <p id="timer-phase-desc" class="text-xs text-slate-500 max-w-sm mx-auto">
+                                Fokus membaca dan memahami materi tanpa gangguan distrasi eksternal.
+                            </p>
+                        </div>
+
+                        <!-- Progress Bar -->
+                        <div class="w-full bg-slate-100 h-2 rounded-full overflow-hidden border border-slate-200">
+                            <div id="timer-progress" class="bg-brand-600 h-full w-0 transition-all duration-300"></div>
+                        </div>
+
+                        <!-- Controls -->
+                        <div class="flex items-center space-x-4">
+                            <button id="start-timer-btn" onclick="toggleTimer()" class="px-6 py-3 bg-brand-600 hover:bg-brand-700 text-white font-semibold text-sm rounded-lg shadow-sm transition-all flex items-center space-x-2">
+                                <i data-lucide="play" class="w-4 h-4 fill-white" id="timer-btn-icon"></i>
+                                <span id="timer-btn-text">Mulai Sesi</span>
+                            </button>
+                            <button onclick="resetTimer()" class="px-4 py-3 bg-slate-100 hover:bg-slate-200 text-slate-700 font-semibold text-sm rounded-lg transition-all border border-slate-200">
+                                Reset
+                            </button>
+                            <button onclick="skipPhase()" class="px-4 py-3 bg-slate-100 hover:bg-slate-200 text-slate-700 font-semibold text-sm rounded-lg transition-all border border-slate-200 flex items-center space-x-1">
+                                <span>Lompati</span>
+                                <i data-lucide="skip-forward" class="w-3.5 h-3.5"></i>
+                            </button>
+                        </div>
+                    </div>
+
+                    <!-- Phase Breakdown Explanation Card -->
+                    <div class="bg-slate-900 text-white rounded-xl p-6 shadow-sm border border-slate-800 flex flex-col justify-between space-y-4">
+                        <div class="space-y-4">
+                            <h3 class="text-sm font-bold text-white border-b border-slate-800 pb-3 flex items-center justify-between">
+                                <span>Struktur Interval Metrik</span>
+                                <i data-lucide="clock" class="w-4 h-4 text-brand-400"></i>
+                            </h3>
+
+                            <div class="space-y-4 text-xs">
+                                <!-- Step 1 -->
+                                <div id="phase-card-1" class="p-3 rounded-lg bg-slate-800 border-l-4 border-brand-500 space-y-1">
+                                    <div class="font-bold text-white flex justify-between">
+                                        <span>1. Pendalaman Konsep</span>
+                                        <span class="text-brand-400 font-mono">30 Min</span>
+                                    </div>
+                                    <p class="text-slate-400">Pembacaan terfokus materi dasar tanpa pengalihan perhatian.</p>
+                                </div>
+
+                                <!-- Step 2 -->
+                                <div id="phase-card-2" class="p-3 rounded-lg bg-slate-800/40 border-l-4 border-slate-700 space-y-1 opacity-70">
+                                    <div class="font-bold text-white flex justify-between">
+                                        <span>2. Latihan Adaptif</span>
+                                        <span class="text-emerald-400 font-mono">15 Min</span>
+                                    </div>
+                                    <p class="text-slate-400">Pengerjaan latihan soal aktif berbasis tingkat kesulitan dinamis.</p>
+                                </div>
+
+                                <!-- Step 3 -->
+                                <div id="phase-card-3" class="p-3 rounded-lg bg-slate-800/40 border-l-4 border-slate-700 space-y-1 opacity-70">
+                                    <div class="font-bold text-white flex justify-between">
+                                        <span>3. Evaluasi & Review AI</span>
+                                        <span class="text-amber-400 font-mono">15 Min</span>
+                                    </div>
+                                    <p class="text-slate-400">Umpan balik instan dari AI mengenai kesalahan pemahaman.</p>
+                                </div>
+                            </div>
+                        </div>
+
+                        <div class="p-3 rounded bg-slate-800/80 border border-slate-700 text-[11px] text-slate-300">
+                            <strong>Efek Psikologis:</strong> Pembagian ini terbukti secara ilmiah menurunkan dorongan kelelahan mental hingga 68%.
+                        </div>
+                    </div>
+                </div>
+            </section>
+
+            <!-- SECTION 4: ACADEMIC INTEGRITY & ANTI-CHEATING DASHBOARD -->
+            <section id="tab-integrity" class="tab-content hidden space-y-6">
+                <!-- Header -->
+                <div class="bg-white rounded-xl border border-slate-200 p-6 shadow-sm">
+                    <div class="max-w-3xl space-y-2">
+                        <span class="inline-flex items-center px-2.5 py-0.5 rounded-full text-xs font-semibold bg-emerald-50 text-emerald-700 border border-emerald-200">
+                            Proteksi Integritas Akademik
+                        </span>
+                        <h1 class="text-2xl font-bold text-slate-900 tracking-tight">Analitik Integritas & Pencegahan Joki</h1>
+                        <p class="text-slate-600 text-sm leading-relaxed">
+                            Memantau konsistensi belajar harian dan menyediakan komitmen digital mandiri untuk membangun kultur kejujuran akademik.
+                        </p>
+                    </div>
+                </div>
+
+                <!-- KPI Metrics Cards -->
+                <div class="grid grid-cols-1 sm:grid-cols-3 gap-4">
+                    <div class="bg-white rounded-xl border border-slate-200 p-5 shadow-sm space-y-2">
+                        <div class="flex items-center justify-between text-slate-500 text-xs font-medium">
+                            <span>Skor Integritas Belajar</span>
+                            <i data-lucide="shield-check" class="w-4 h-4 text-emerald-600"></i>
+                        </div>
+                        <div class="text-2xl font-bold text-slate-900">94<span class="text-sm font-normal text-slate-500">/100</span></div>
+                        <p class="text-[11px] text-emerald-600 font-medium">Konsistensi Sangat Tinggi</p>
+                    </div>
+
+                    <div class="bg-white rounded-xl border border-slate-200 p-5 shadow-sm space-y-2">
+                        <div class="flex items-center justify-between text-slate-500 text-xs font-medium">
+                            <span>Reduksi Beban Kecemasan</span>
+                            <i data-lucide="trending-down" class="w-4 h-4 text-brand-600"></i>
+                        </div>
+                        <div class="text-2xl font-bold text-slate-900">-42%</div>
+                        <p class="text-[11px] text-slate-500">Dibandingkan metode SKS (Sistem Kebut Semalam)</p>
+                    </div>
+
+                    <div class="bg-white rounded-xl border border-slate-200 p-5 shadow-sm space-y-2">
+                        <div class="flex items-center justify-between text-slate-500 text-xs font-medium">
+                            <span>Penguasaan Materi Asli</span>
+                            <i data-lucide="award" class="w-4 h-4 text-amber-600"></i>
+                        </div>
+                        <div class="text-2xl font-bold text-slate-900">88%</div>
+                        <p class="text-[11px] text-emerald-600 font-medium">Siap Ujian Mandiri</p>
+                    </div>
+                </div>
+
+                <!-- Chart & Commitment Grid -->
+                <div class="grid grid-cols-1 lg:grid-cols-3 gap-6">
+                    
+                    <!-- Analytics Chart Container -->
+                    <div class="lg:col-span-2 bg-white rounded-xl border border-slate-200 p-6 shadow-sm space-y-4">
+                        <div class="flex items-center justify-between border-b border-slate-100 pb-3">
+                            <div>
+                                <h3 class="font-bold text-slate-900 text-sm">Grafik Konsistensi Belajar Harian</h3>
+                                <p class="text-xs text-slate-500">Pola waktu belajar konsisten mencegah timbulnya kepanikan instan.</p>
+                            </div>
+                            <span class="text-xs text-slate-400 font-mono">Data 7 Hari Terakhir</span>
+                        </div>
+
+                        <div class="h-64 w-full">
+                            <canvas id="integrityChart"></canvas>
+                        </div>
+                    </div>
+
+                    <!-- Pakta Integritas Interactive Module -->
+                    <div class="bg-slate-900 text-white rounded-xl p-6 shadow-sm border border-slate-800 flex flex-col justify-between space-y-4">
+                        <div class="space-y-4">
+                            <div class="flex items-center space-x-2 border-b border-slate-800 pb-3">
+                                <i data-lucide="file-check" class="w-5 h-5 text-emerald-400"></i>
+                                <h3 class="font-bold text-white text-sm">Pakta Integritas Digital</h3>
+                            </div>
+
+                            <p class="text-xs text-slate-300 leading-relaxed">
+                                Komitmen karya mandiri sebelum mengunduh atau mengunggah berkas penugasan akhir.
+                            </p>
+
+                            <div class="space-y-3 pt-2 text-xs">
+                                <label class="flex items-start space-x-2.5 cursor-pointer">
+                                    <input type="checkbox" id="pledge-1" onchange="checkPledge()" class="mt-0.5 rounded bg-slate-800 border-slate-700 text-brand-600 focus:ring-brand-600">
+                                    <span class="text-slate-300">Saya menyusun seluruh analisis tulisan secara mandiri.</span>
+                                </label>
+                                <label class="flex items-start space-x-2.5 cursor-pointer">
+                                    <input type="checkbox" id="pledge-2" onchange="checkPledge()" class="mt-0.5 rounded bg-slate-800 border-slate-700 text-brand-600 focus:ring-brand-600">
+                                    <span class="text-slate-300">Penggunaan AI hanya sebagai pendamping pemahaman, bukan pembuat karya instan.</span>
+                                </label>
+                                <label class="flex items-start space-x-2.5 cursor-pointer">
+                                    <input type="checkbox" id="pledge-3" onchange="checkPledge()" class="mt-0.5 rounded bg-slate-800 border-slate-700 text-brand-600 focus:ring-brand-600">
+                                    <span class="text-slate-300">Menolak segala bentuk transaksi joki tugas/akademik.</span>
+                                </label>
+                            </div>
+                        </div>
+
+                        <div class="pt-4 border-t border-slate-800">
+                            <button id="pledge-btn" disabled class="w-full py-2.5 bg-slate-800 text-slate-500 font-semibold text-xs rounded-lg transition-all cursor-not-allowed">
+                                Tanda Tangan Komitmen Digital
+                            </button>
+                        </div>
+                    </div>
+                </div>
+            </section>
+
+        </main>
+    </div>
+
+    <!-- JAVASCRIPT CONTROLLERS -->
+    <script>
+        // Init Lucide Icons
+        lucide.createIcons();
+
+        // 1. Navigation Controller
+        function switchTab(tabId) {
+            // Hide all contents
+            document.querySelectorAll('.tab-content').forEach(el => el.classList.add('hidden'));
+            
+            // Show target
+            const target = document.getElementById('tab-' + tabId);
+            if (target) target.classList.remove('hidden');
+
+            // Update sidebar buttons
+            document.querySelectorAll('.nav-item').forEach(el => {
+                el.classList.remove('bg-slate-100', 'text-slate-900', 'font-semibold');
+                el.classList.add('text-slate-600');
+            });
+
+            const activeNav = document.getElementById('nav-' + tabId);
+            if (activeNav) {
+                activeNav.classList.add('bg-slate-100', 'text-slate-900', 'font-semibold');
+                activeNav.classList.remove('text-slate-600');
+            }
+
+            // Sync mobile select dropdown
+            const mobileNav = document.getElementById('mobile-nav');
+            if (mobileNav) mobileNav.value = tabId;
+
+            // Re-render chart if switching to integrity tab
+            if (tabId === 'integrity') {
+                renderIntegrityChart();
+            }
+        }
+
+        // Initialize default tab
+        switchTab('diagnostic');
+
+        // 2. Diagnostic Tool Logic (VARK Test)
+        function updateDiagnostic() {
+            const form = document.getElementById('vark-form');
+            const q1 = form.elements['q1'].value;
+            const q2 = form.elements['q2'].value;
+            const q3 = form.elements['q3'].value;
+            const q4 = form.elements['q4'].value;
+
+            let answers = [q1, q2, q3, q4].filter(Boolean);
+            document.getElementById('diagnostic-progress').innerText = `Terisi ${answers.length} dari 4`;
+
+            if (answers.length === 0) return;
+
+            let countV = answers.filter(x => x === 'V').length;
+            let countA = answers.filter(x => x === 'A').length;
+            let countK = answers.filter(x => x === 'K').length;
+            let total = answers.length;
+
+            let pctV = Math.round((countV / total) * 100);
+            let pctA = Math.round((countA / total) * 100);
+            let pctK = Math.round((countK / total) * 100);
+
+            // Update DOM UI
+            document.getElementById('vark-v-val').innerText = pctV + '%';
+            document.getElementById('vark-v-bar').style.width = pctV + '%';
+
+            document.getElementById('vark-a-val').innerText = pctA + '%';
+            document.getElementById('vark-a-bar').style.width = pctA + '%';
+
+            document.getElementById('vark-k-val').innerText = pctK + '%';
+            document.getElementById('vark-k-bar').style.width = pctK + '%';
+
+            // Title & Description Logic
+            const titleEl = document.getElementById('vark-result-title');
+            const descEl = document.getElementById('vark-result-desc');
+
+            if (pctV >= pctA && pctV >= pctK) {
+                titleEl.innerText = `Visual Dominant (${pctV}%)`;
+                descEl.innerText = "Anda sangat responsif terhadap pemetaan visual, hierarki diagram, dan bagan alir. Sistem memprioritaskan Mind Map interaktif pada Multi-Modal Hub.";
+            } else if (pctA >= pctV && pctA >= pctK) {
+                titleEl.innerText = `Auditori Dominant (${pctA}%)`;
+                descEl.innerText = "Anda paling mudah mencerna materi lewat dialog pendengaran. Sistem memprioritaskan Rangkuman Audio Podcast pada Multi-Modal Hub.";
+            } else {
+                titleEl.innerText = `Kinestetik Dominant (${pctK}%)`;
+                descEl.innerText = "Anda belajar paling efektif dengan praktek dan uji aktif. Sistem memprioritaskan Flashcard Interaktif pada Multi-Modal Hub.";
+            }
+        }
+
+        function applyDiagnosticAndRedirect() {
+            switchTab('notebook');
+        }
+
+        // 3. Multi-Modal Hub Tab Selector
+        function setModalTab(type) {
+            document.getElementById('sub-visual').classList.add('hidden');
+            document.getElementById('sub-auditory').classList.add('hidden');
+            document.getElementById('sub-kinesthetic').classList.add('hidden');
+
+            document.getElementById('modal-tab-visual').className = 'px-3 py-1.5 rounded-md text-slate-600 hover:text-slate-900 transition-all';
+            document.getElementById('modal-tab-auditory').className = 'px-3 py-1.5 rounded-md text-slate-600 hover:text-slate-900 transition-all';
+            document.getElementById('modal-tab-kinesthetic').className = 'px-3 py-1.5 rounded-md text-slate-600 hover:text-slate-900 transition-all';
+
+            document.getElementById('sub-' + type).classList.remove('hidden');
+            document.getElementById('modal-tab-' + type).className = 'px-3 py-1.5 rounded-md bg-white text-slate-900 shadow-sm transition-all font-semibold';
+        }
+
+        // Flip Card Logic
+        function flipCard() {
+            document.getElementById('flashcard').classList.toggle('flashcard-flipped');
+        }
+
+        // Audio Simulation Logic
+        let isAudioPlaying = false;
+        function toggleAudioSimulation() {
+            isAudioPlaying = !isAudioPlaying;
+            const btnIcon = document.getElementById('play-icon');
+            if (isAudioPlaying) {
+                btnIcon.setAttribute('data-lucide', 'pause');
+            } else {
+                btnIcon.setAttribute('data-lucide', 'play');
+            }
+            lucide.createIcons();
+        }
+
+        // 4. Adaptive 30-15-15 Interval Timer Logic
+        let timerSeconds = 30 * 60;
+        let currentPhase = 1; // 1: 30m, 2: 15m, 3: 15m
+        let isTimerRunning = false;
+        let timerInterval = null;
+
+        const phaseConfig = {
+            1: { duration: 30 * 60, title: "Fase 1: Pendalaman Konsep (30 Min)", desc: "Fokus membaca dan memahami materi tanpa gangguan distrasi eksternal." },
+            2: { duration: 15 * 60, title: "Fase 2: Latihan Adaptif (15 Min)", desc: "Pengerjaan latihan soal aktif untuk menguji pemahaman konsep." },
+            3: { duration: 15 * 60, title: "Fase 3: Evaluasi & Review AI (15 Min)", desc: "Melihat umpan balik koreksi AI dan istirahat pemulihan kognitif." }
+        };
+
+        function updateTimerDisplay() {
+            const mins = Math.floor(timerSeconds / 60);
+            const secs = timerSeconds % 60;
+            document.getElementById('timer-display').innerText = 
+                `${mins.toString().padStart(2, '0')}:${secs.toString().padStart(2, '0')}`;
+
+            const totalDuration = phaseConfig[currentPhase].duration;
+            const pct = ((totalDuration - timerSeconds) / totalDuration) * 100;
+            document.getElementById('timer-progress').style.width = pct + '%';
+        }
+
+        function toggleTimer() {
+            if (isTimerRunning) {
+                clearInterval(timerInterval);
+                isTimerRunning = false;
+                document.getElementById('timer-btn-text').innerText = "Lanjutkan Sesi";
+            } else {
+                isTimerRunning = true;
+                document.getElementById('timer-btn-text').innerText = "Jeda Sesi";
+                timerInterval = setInterval(() => {
+                    if (timerSeconds > 0) {
+                        timerSeconds--;
+                        updateTimerDisplay();
+                    } else {
+                        skipPhase();
+                    }
+                }, 1000);
+            }
+        }
+
+        function resetTimer() {
+            clearInterval(timerInterval);
+            isTimerRunning = false;
+            timerSeconds = phaseConfig[currentPhase].duration;
+            document.getElementById('timer-btn-text').innerText = "Mulai Sesi";
+            updateTimerDisplay();
+        }
+
+        function skipPhase() {
+            clearInterval(timerInterval);
+            isTimerRunning = false;
+            currentPhase = currentPhase === 3 ? 1 : currentPhase + 1;
+            
+            // Update Phase Card UI
+            document.getElementById('timer-phase-title').innerText = phaseConfig[currentPhase].title;
+            document.getElementById('timer-phase-desc').innerText = phaseConfig[currentPhase].desc;
+            
+            timerSeconds = phaseConfig[currentPhase].duration;
+            document.getElementById('timer-btn-text').innerText = "Mulai Sesi";
+            updateTimerDisplay();
+
+            // Highlight Cards
+            [1, 2, 3].forEach(p => {
+                const card = document.getElementById('phase-card-' + p);
+                if (p === currentPhase) {
+                    card.className = "p-3 rounded-lg bg-slate-800 border-l-4 border-brand-500 space-y-1";
+                } else {
+                    card.className = "p-3 rounded-lg bg-slate-800/40 border-l-4 border-slate-700 space-y-1 opacity-70";
+                }
+            });
+        }
+
+        // 5. Academic Integrity Pledge Check
+        function checkPledge() {
+            const p1 = document.getElementById('pledge-1').checked;
+            const p2 = document.getElementById('pledge-2').checked;
+            const p3 = document.getElementById('pledge-3').checked;
+            const btn = document.getElementById('pledge-btn');
+
+            if (p1 && p2 && p3) {
+                btn.disabled = false;
+                btn.className = "w-full py-2.5 bg-emerald-600 hover:bg-emerald-700 text-white font-semibold text-xs rounded-lg transition-all shadow-sm cursor-pointer";
+                btn.innerText = "Tanda Tangan Komitmen Digital (Aktif)";
+            } else {
+                btn.disabled = true;
+                btn.className = "w-full py-2.5 bg-slate-800 text-slate-500 font-semibold text-xs rounded-lg transition-all cursor-not-allowed";
+                btn.innerText = "Tanda Tangan Komitmen Digital";
+            }
+        }
+
+        // 6. Chart.js Analytics Render
+        let integrityChartInstance = null;
+        function renderIntegrityChart() {
+            if (integrityChartInstance) integrityChartInstance.destroy();
+
+            const ctx = document.getElementById('integrityChart').getContext('2d');
+            integrityChartInstance = new Chart(ctx, {
+                type: 'line',
+                data: {
+                    labels: ['Senin', 'Selasa', 'Rabu', 'Kamis', 'Jumat', 'Sabtu', 'Minggu'],
+                    datasets: [
+                        {
+                            label: 'Konsistensi Interval (EduMind)',
+                            data: [85, 88, 92, 90, 95, 94, 96],
+                            borderColor: '#0284c7',
+                            backgroundColor: 'rgba(2, 132, 199, 0.08)',
+                            fill: true,
+                            tension: 0.3,
+                            borderWidth: 2,
+                            pointRadius: 4,
+                            pointBackgroundColor: '#0284c7'
+                        },
+                        {
+                            label: 'Tingkat Kecemasan Tugas',
+                            data: [70, 65, 50, 45, 35, 30, 25],
+                            borderColor: '#ef4444',
+                            borderDash: [5, 5],
+                            tension: 0.3,
+                            borderWidth: 1.5,
+                            pointRadius: 0
+                        }
+                    ]
+                },
+                options: {
+                    responsive: true,
+                    maintainAspectRatio: false,
+                    plugins: {
+                        legend: {
+                            position: 'top',
+                            labels: {
+                                font: { family: 'Inter', size: 11 },
+                                boxWidth: 12
+                            }
+                        }
+                    },
+                    scales: {
+                        y: {
+                            min: 0,
+                            max: 100,
+                            grid: { color: '#f1f5f9' },
+                            ticks: { font: { family: 'Inter', size: 10 } }
+                        },
+                        x: {
+                            grid: { display: false },
+                            ticks: { font: { family: 'Inter', size: 10 } }
+                        }
+                    }
+                }
+            });
+        }
+    </script>
+</body>
+</html>
